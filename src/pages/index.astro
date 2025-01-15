@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
+import {supabase} from '../lib/supabase.ts'
 ---
 
 <Layout>
@@ -8,6 +9,110 @@ import Navigation from '../components/Navigation.astro';
   
 	<!-- Page Heading -->
 	<h1>
-	  Welcome to week 10 of Web Frameworks, here's a demo on how to login and register
+	  Welcome to week 11 of Web Frameworks, here's a demo on how to login and register
 	</h1>
   </Layout>
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog con Supabase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin: 10px 0 5px;
+    }
+    input, textarea {
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px;
+      background-color: peru;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Crear un nuevo post</h1>
+   
+    <form id="postForm">
+      <label for="title">Título del post</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        required
+      />
+     
+      <label for="content">Contenido</label>
+      <textarea
+        id="content"
+        name="content"
+        required
+      ></textarea>
+     
+      <button type="submit">Crear Post</button>
+    </form>
+  </main>
+
+  <script type="module">
+    import { supabase } from './supabase.js';
+
+ 
+    const form = document.getElementById('postForm');
+    const titleField = document.getElementById('title');
+    const contentField = document.getElementById('content');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); 
+
+      const title = titleField.value;
+      const content = contentField.value;
+
+      
+      if (!title || !content) {
+        alert('Por favor, completa todos los campos.');
+        return;
+      }
+
+    
+      const { data, error } = await supabase
+        .from('posts')
+        .insert([{ title, content }]);
+
+      if (error) {
+        alert('Error al crear el post: ' + error.message);
+      } else {
+        alert('Post creado exitosamente');
+        titleField.value = ''; 
+        contentField.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
