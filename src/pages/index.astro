@@ -1,7 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
-import {supabase} from '../lib/supabase.ts'
+import { supabase } from '../lib/supabase.ts';
+
+const { data: posts, error } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+	const safePosts = Array.isArray(posts) ? posts : [];
 ---
 
 <Layout>
@@ -54,53 +60,55 @@ import {supabase} from '../lib/supabase.ts'
     button:hover {
       background-color: black;
     }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      background-color: white;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>Add New Post</h1>
-   
     <form id="postForm">
       <label for="title">Title</label>
-      <input
-        type="text"
-        id="title"
-        name="title"
-        required
-      />
-     
+      <input type="text" id="title" name="title" required />
+
       <label for="content">Body</label>
-      <textarea
-        id="content"
-        name="content"
-        required
-      ></textarea>
-     
+      <textarea id="content" name="content" required></textarea>
+
       <button type="submit">Create</button>
     </form>
+
+    <h1>Posts Recientes</h1>
+    <ul id="postsList"></ul>
   </main>
 
   <script type="module">
     import { supabase } from './supabase.js';
 
- 
+    // Crear post
     const form = document.getElementById('postForm');
     const titleField = document.getElementById('title');
     const contentField = document.getElementById('content');
 
     form.addEventListener('submit', async (event) => {
-      event.preventDefault(); 
+      event.preventDefault();
 
       const title = titleField.value;
       const content = contentField.value;
 
-      
       if (!title || !content) {
         alert('Por favor, completa todos los campos.');
         return;
       }
 
-    
       const { data, error } = await supabase
         .from('posts')
         .insert([{ title, content }]);
@@ -109,10 +117,40 @@ import {supabase} from '../lib/supabase.ts'
         alert('Error al crear el post: ' + error.message);
       } else {
         alert('Post creado exitosamente');
-        titleField.value = ''; 
+        titleField.value = '';
         contentField.value = '';
+        loadPosts(); // Vuelve a cargar los posts después de crear uno nuevo
       }
     });
+
+    // Cargar posts
+    async function loadPosts() {
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        alert('Error al cargar los posts: ' + error.message);
+        return;
+      }
+
+      const postsList = document.getElementById('postsList');
+      postsList.innerHTML = ''; // Limpiar lista antes de mostrar nuevos posts
+
+      posts.forEach(post => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <h2>${post.title}</h2>
+          <p>${post.content}</p>
+          <small>Publicado: ${new Date(post.created_at).toLocaleDateString()}</small>
+        `;
+        postsList.appendChild(li);
+      });
+    }
+
+    // Cargar posts al iniciar la página
+    loadPosts();
   </script>
 </body>
 </html>
