@@ -8,6 +8,7 @@ const { data: posts, error } = await supabase
     .select('*')
     .order('created_at', { ascending: false });
 	const safePosts = Array.isArray(posts) ? posts : [];
+
 ---
 
 <Layout>
@@ -136,7 +137,7 @@ const { data: posts, error } = await supabase
       }
 
       const postsList = document.getElementById('postsList');
-      postsList.innerHTML = ''; // Limpiar lista antes de mostrar nuevos posts
+      postsList.innerHTML = ''; 
 
       posts.forEach(post => {
         const li = document.createElement('li');
@@ -151,6 +152,7 @@ const { data: posts, error } = await supabase
 
     // Cargar posts al iniciar la página
     loadPosts();
+    
   </script>
 </body>
 </html>
