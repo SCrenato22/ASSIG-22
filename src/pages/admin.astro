@@ -1,0 +1,143 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro'; 
+---
+<Navigation />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Usuarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <h1>Panel de Administración - Usuarios</h1>
+       
+        <h2>Usuarios Registrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID de Usuario</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userList">
+               
+            </tbody>
+        </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+
+       
+       
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        async function checkAdmin() {
+            const { data: { user }, error } = await supabase.auth.getUser(); 
+            if (error || !user) {
+                alert("Debes iniciar sesión para acceder a esta página.");
+                window.location.href = '/login.html'; 
+            } else {
+              
+                console.log('Usuario autenticado:', user);
+                fetchUsers(); 
+            }
+        }
+
+      
+        function fetchUsers() {
+            const userList = document.getElementById('userList');
+           
+            if (!userList) {
+                console.error("No se pudo encontrar el elemento 'userList'.");
+                return;
+            }
+
+           
+            const users = [
+                { id: '1', email: 'user1@example.com' },
+                { id: '2', email: 'user2@example.com' },
+                { id: '3', email: 'user3@example.com' }
+            ];
+
+            userList.innerHTML = ''; 
+
+            if (users.length === 0) {
+                userList.innerHTML = "<tr><td colspan='3'>No hay usuarios registrados.</td></tr>";
+                return;
+            }
+
+       
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.email}</td>
+                    <td><button onclick="deleteUser('${user.id}')">Eliminar</button></td>
+                `;
+                userList.appendChild(row);
+            });
+        }
+
+        async function deleteUser(userId: any) {
+        
+            if (!userId) {
+                console.error("El ID de usuario es inválido");
+                return;
+            }
+
+            if (confirm("¿Estás seguro de que quieres eliminar este usuario?")) {
+                alert(`Usuario con ID ${userId} eliminado.`); 
+               
+                console.log(`Usuario con ID ${userId} eliminado desde la lógica de backend`);
+            }
+        }
+
+        checkAdmin();
+    </script>
+
+</body>
+</html>
