@@ -51,7 +51,7 @@ const { data: posts, error } = await supabase
       border-radius: 4px;
     }
     button {
-      padding: 10px;
+      padding: 2px;
       background-color: peru;
       color: white;
       border: none;
@@ -87,7 +87,7 @@ const { data: posts, error } = await supabase
       <button type="submit">Create</button>
     </form>
 
-    <h1>Posts Recientes</h1>
+    <h1>Recent Posts</h1>
     <ul id="postsList"></ul>
   </main>
 
@@ -155,4 +155,94 @@ const { data: posts, error } = await supabase
     
   </script>
 </body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coments</title>
+  </head>
+  <body>
+    <h1>comments</h1>
+
+   
+    <form id="commentForm">
+      <label for="name">Name</label>
+      <input type="text" id="name" required />
+
+      <label for="comment">Coment</label>
+      <textarea id="comment" required></textarea>
+
+      <button type="submit">Send</button>
+    </form>
+
+    <h2>Recent Comments</h2>
+    <ul id="commentsList"></ul>
+
+    <script type="module">
+      import { supabase } from '../lib/supabase';
+
+    
+      const form = document.getElementById('commentForm');
+      const nameField = document.getElementById('name');
+      const commentField = document.getElementById('comment');
+      const commentsList = document.getElementById('commentsList');
+
+      
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const name = nameField.value;
+        const comment = commentField.value;
+
+        if (!name || !comment) {
+          alert('Por favor, completa todos los campos.');
+          return;
+        }
+
+        
+        const { data, error } = await supabase
+          .from('comments')
+          .insert([{ name, comment }]);
+
+        if (error) {
+          alert('Error al agregar el comentario: ' + error.message);
+        } else {
+          alert('Comentario agregado exitosamente.');
+          nameField.value = '';
+          commentField.value = '';
+          loadComments(); 
+        }
+      });
+
+      
+      async function loadComments() {
+        const { data: comments, error } = await supabase
+          .from('comments')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          alert('Error al cargar los comentarios: ' + error.message);
+          return;
+        }
+
+        commentsList.innerHTML = ''; 
+
+        comments.forEach(comment => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <strong>${comment.name}</strong> dijo:
+            <p>${comment.comment}</p>
+            <small>Publicado: ${new Date(comment.created_at).toLocaleDateString()}</small>
+          `;
+          commentsList.appendChild(li);
+        });
+      }
+
+     
+      loadComments();
+    </script>
+  </body>
 </html>
