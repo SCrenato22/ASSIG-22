@@ -94,7 +94,7 @@ const { data: posts, error } = await supabase
   <script type="module">
     import { supabase } from './supabase.js';
 
-    // Crear post
+ 
     const form = document.getElementById('postForm');
     const titleField = document.getElementById('title');
     const contentField = document.getElementById('content');
@@ -120,11 +120,11 @@ const { data: posts, error } = await supabase
         alert('Post creado exitosamente');
         titleField.value = '';
         contentField.value = '';
-        loadPosts(); // Vuelve a cargar los posts después de crear uno nuevo
+        loadPosts(); 
       }
     });
 
-    // Cargar posts
+  
     async function loadPosts() {
       const { data: posts, error } = await supabase
         .from('posts')
@@ -150,7 +150,7 @@ const { data: posts, error } = await supabase
       });
     }
 
-    // Cargar posts al iniciar la página
+   
     loadPosts();
     
   </script>
