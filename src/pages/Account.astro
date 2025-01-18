@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro'; 
+import { supabase } from '../lib/supabase'
 ---
 <Navigation />
 <!DOCTYPE html>
@@ -29,7 +30,11 @@ import Navigation from '../components/Navigation.astro';
         th, td {
             padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #fbda04;
+            border-top: solid #fbda04;
+            border-bottom: solid #fbda04;
+            border-right: solid #fbda04;
+            border-left: solid #fbda04;
+            
         }
        
     </style>
@@ -39,13 +44,13 @@ import Navigation from '../components/Navigation.astro';
     <main>
         <h1>Accounts</h1>
        
-        <h2>Usuarios Registrados</h2>
+        <h2>Accounts</h2>
         <table>
             <thead>
                 <tr>
-                    <th>ID de Usuario</th>
+                    <th>ID </th>
                     <th>Email</th>
-                    <th>Acciones</th>
+                    <th>Accs</th>
                 </tr>
             </thead>
             <tbody id="userList">
@@ -91,7 +96,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
             const users = [
                 { id: '1', email: 'user1@example.com' },
                 { id: '2', email: 'user2@example.com' },
-                { id: '3', email: 'user3@example.com' }
+               
             ];
 
             userList.innerHTML = ''; 
